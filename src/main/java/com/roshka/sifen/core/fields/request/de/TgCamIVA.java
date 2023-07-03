@@ -36,13 +36,13 @@ public class TgCamIVA extends SifenObjectBase {
         //AQUI ESTAN REDONDEANDO ERRONEAMENTE
         //BigDecimal propIVA = this.dPropIVA.divide(hundred, scale, RoundingMode.HALF_UP);
         BigDecimal propIVA = this.dPropIVA.divide(hundred, 3, RoundingMode.HALF_UP);
-        BigDecimal tasaIvaCoef = this.dTasaIVA.divide(hundred, 3, RoundingMode.HALF_UP).add(BigDecimal.ONE);
-
+        BigDecimal tasaIvaCoef = this.dTasaIVA.divide(hundred, 3, RoundingMode.HALF_UP).multiply(propIVA).add(BigDecimal.ONE);
+        BigDecimal montoSinIva;
         if (this.iAfecIVA.getVal() == 1 || this.iAfecIVA.getVal() == 4) {
-            dBasGravIVA = dTotOpeItem
-                    .multiply(propIVA)
-                    .divide(tasaIvaCoef, scale, RoundingMode.HALF_UP);
-            dLiqIVAItem = dTotOpeItem.multiply(propIVA).subtract(dBasGravIVA).setScale(scale, RoundingMode.HALF_UP);
+            montoSinIva = dTotOpeItem.divide(tasaIvaCoef, scale, RoundingMode.HALF_UP);
+            dLiqIVAItem = dTotOpeItem.subtract(montoSinIva).setScale(scale, RoundingMode.HALF_UP);
+            dBasGravIVA = montoSinIva.multiply(propIVA).setScale(scale, RoundingMode.HALF_UP);
+            
             
 //            if (this.dTasaIVA.equals(BigDecimal.valueOf(10))) {
 //                //(total)*1/1.1 
