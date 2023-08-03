@@ -34,9 +34,9 @@ public class TgCamIVA extends SifenObjectBase {
 
         BigDecimal hundred = BigDecimal.valueOf(100);
         BigDecimal propIVA = this.dPropIVA.divide(hundred, 3, RoundingMode.HALF_UP);
-        BigDecimal tasaIva = this.dTasaIVA.divide(hundred, 3, RoundingMode.HALF_UP);
+ //       BigDecimal tasaIva = this.dTasaIVA.divide(hundred, 3, RoundingMode.HALF_UP);
         BigDecimal tasaIvaCoef = this.dTasaIVA.divide(hundred, 3, RoundingMode.HALF_UP).multiply(propIVA).add(BigDecimal.ONE);
-        BigDecimal montoSinIva;
+        BigDecimal montoSinIva = BigDecimal.ZERO;
         if (this.iAfecIVA.getVal() == 1 || this.iAfecIVA.getVal() == 4) {
             montoSinIva = dTotOpeItem.divide(tasaIvaCoef, scale, RoundingMode.HALF_UP);
             dLiqIVAItem = dTotOpeItem.subtract(montoSinIva).setScale(scale, RoundingMode.HALF_UP);
@@ -55,9 +55,10 @@ public class TgCamIVA extends SifenObjectBase {
                 // E737 = [100 * EA008 * (100 – E733)] / [10000 + (E734 * E733)]
                 //this.dBasExe = (dTotOpeItem.multiply(hundred.subtract(dPropIVA)).multiply(hundred)).divide((this.dTasaIVA.multiply(dPropIVA)).add(BigDecimal.valueOf(10000)), scale, RoundingMode.HALF_UP);
                 //Si por el redondeo la tasa del iva quedo ligeramente menor
-                if (dLiqIVAItem.divide(dBasGravIVA).compareTo(tasaIva) < 0){
-                    dLiqIVAItem = dLiqIVAItem.add(BigDecimal.ONE);
-                    dBasGravIVA = dLiqIVAItem.divide(tasaIva, scale, RoundingMode.HALF_UP);
+                if (scale == 0) {
+                    if (dBasGravIVA.divide(montoSinIva, 8, RoundingMode.DOWN).compareTo(propIVA) < 0) {
+                        dBasGravIVA = dBasGravIVA.add(BigDecimal.ONE);
+                    }
                 }
                 //Mas simple y claro  exento = total-basegravada-iva
                 this.dBasExe = dTotOpeItem.subtract(this.dBasGravIVA).subtract(this.dLiqIVAItem).setScale(scale, RoundingMode.HALF_UP);
