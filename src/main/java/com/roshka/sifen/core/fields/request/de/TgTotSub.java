@@ -53,7 +53,7 @@ public class TgTotSub extends SifenObjectBase {
         TdCondTiCam dCondTiCam = gOpeCom.getdCondTiCam();
         BigDecimal dTiCam = gOpeCom.getdTiCam();
 
-        int scale = cMoneOpe == CMondT.PYG ? 0 : 2;
+        int scale = cMoneOpe == CMondT.PYG ? 2 : 2;
 
         SOAPElement gTotSub = DE.addChildElement("gTotSub");
 

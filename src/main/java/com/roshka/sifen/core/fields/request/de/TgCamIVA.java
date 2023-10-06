@@ -29,6 +29,9 @@ public class TgCamIVA extends SifenObjectBase {
         gCamIVA.addChildElement("dPropIVA").setTextContent(String.valueOf(this.dPropIVA));
         gCamIVA.addChildElement("dTasaIVA").setTextContent(String.valueOf(this.dTasaIVA));
         int scale = cMoneOpe.name().equals("PYG") ? 0 : 2;
+        if (this.iAfecIVA.getVal() == 4){
+            scale = 2;
+        }
 
         dTotOpeItem = dTotOpeItem.setScale(scale, RoundingMode.HALF_UP);
 
@@ -53,15 +56,9 @@ public class TgCamIVA extends SifenObjectBase {
             if (this.iAfecIVA.getVal() == 4) {
                 // Actualización: https://ekuatia.set.gov.py/portal/ekuatia/detail?content-id=/repository/collaboration/sites/ekuatia/documents/documentacion/documentacion-tecnica/NT_E_KUATIA_013_MT_V150.pdf
                 // E737 = [100 * EA008 * (100 – E733)] / [10000 + (E734 * E733)]
-                //this.dBasExe = (dTotOpeItem.multiply(hundred.subtract(dPropIVA)).multiply(hundred)).divide((this.dTasaIVA.multiply(dPropIVA)).add(BigDecimal.valueOf(10000)), scale, RoundingMode.HALF_UP);
-                //Si por el redondeo la tasa del iva quedo ligeramente menor
-                if (scale == 0) {
-                    if (dBasGravIVA.divide(montoSinIva, 8, RoundingMode.DOWN).compareTo(propIVA) < 0) {
-                        dBasGravIVA = dBasGravIVA.add(BigDecimal.ONE);
-                    }
-                }
+                this.dBasExe = (dTotOpeItem.multiply(hundred.subtract(dPropIVA)).multiply(hundred)).divide((this.dTasaIVA.multiply(dPropIVA)).add(BigDecimal.valueOf(10000)), scale, RoundingMode.HALF_UP);
                 //Mas simple y claro  exento = total-basegravada-iva
-                this.dBasExe = dTotOpeItem.subtract(this.dBasGravIVA).subtract(this.dLiqIVAItem).setScale(scale, RoundingMode.HALF_UP);
+//                this.dBasExe = dTotOpeItem.subtract(this.dBasGravIVA).subtract(this.dLiqIVAItem).setScale(scale, RoundingMode.HALF_UP);
             } else {
                 this.dBasExe = BigDecimal.valueOf(0);
             }
